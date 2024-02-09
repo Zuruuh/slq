@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, error::Error};
+use std::{collections::BTreeMap, error::Error, fmt::Debug};
 
 pub mod mysql;
 
@@ -22,7 +22,9 @@ pub trait Driver {
         table: String,
         filter: Option<String>,
         sort: Option<String>,
-    ) -> Result<BTreeMap<String, String>, Box<dyn Error>>;
+        offset: usize,
+        limit: usize,
+    ) -> Result<Vec<RowValues>, Box<dyn Error>>;
 
     async fn list_constraints(
         &self,
@@ -43,9 +45,29 @@ pub trait Driver {
     ) -> Result<Vec<IndexInfo>, Box<dyn Error>>;
 }
 
+#[derive(Default, PartialEq, Eq)]
+pub struct RowValues(BTreeMap<String, String>);
+
+impl From<BTreeMap<String, String>> for RowValues {
+    fn from(value: BTreeMap<String, String>) -> Self {
+        Self(value)
+    }
+}
+
+impl std::fmt::Debug for RowValues {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Default)]
 pub struct ColumnInfo {
-    name: String,
-    r#type: String,
+    pub name: String,
+    pub r#type: String,
+    pub nullable: bool,
+    pub key: Option<String>,
+    pub default: Option<String>,
+    pub extra: Option<String>,
 }
 
 pub struct ConstraintInfo;

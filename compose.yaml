@@ -1,6 +1,11 @@
 services:
   mysql:
     image: mysql:8.0
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--user=root", "--password=passwd"]
+      timeout: 1s
+      interval: 1s
+      retries: 60
     environment:
       MYSQL_ROOT_PASSWORD: "passwd"
     volumes:

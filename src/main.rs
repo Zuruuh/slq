@@ -12,6 +12,7 @@ use ratatui::{
 };
 
 mod drivers;
+mod ui;
 
 #[tokio::main]
 async fn main() -> color_eyre::Result<()> {
